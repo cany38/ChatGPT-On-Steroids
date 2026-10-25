@@ -1,0 +1,175 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ChatGPT On Steroids</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Big+Shoulders+Text:wght@500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="app" hidden>
+  <header class="top" id="top">
+    <div class="wordmark">ChatGPT On Steroids</div>
+    <div class="clock" aria-hidden="true"><span class="flaps" id="clock"></span></div>
+    <div class="conn" aria-live="polite">
+      <span class="state"><span class="lamp" id="lamp"></span><span id="connState">Connecting</span></span>
+      <span class="meta" id="connMeta"></span>
+      <button type="button" class="guide-btn" id="guideBtn">How to connect</button>
+    </div>
+    <div class="counts" aria-label="Today's totals">
+      <div data-tone="all"><span class="flaps" id="nCalls"></span><small>Calls today</small></div>
+      <div data-tone="ok"><span class="flaps" id="nOk"></span><small>Done</small></div>
+      <div data-tone="no"><span class="flaps" id="nNo"></span><small>Errors</small></div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main class="main">
+      <section class="mcp" aria-labelledby="mcpH">
+        <div class="mcp-h">
+          <h2 id="mcpH">Connector URL</h2>
+          <span class="chip" id="mcpState">Waiting for tunnel</span>
+        </div>
+        <p class="mcp-how">In ChatGPT open <b>Plugins</b> (<b>chatgpt.com/plugins?directoryTab=personal</b>), press <b>Add</b> (top right) and pick the custom MCP server option, paste this URL under <b>Connection &gt; Server URL</b>, set <b>Authentication</b> to <b>No authentication</b>, tick <b>I understand and want to continue</b> and press <b>Create as a plugin</b>. ChatGPT validates the connector by calling <b>cgt_ping</b>. The URL holds the secret, so treat it like a password.</p>
+        <div class="mcp-row">
+          <code id="mcpUrl" class="mcp-url none">The permanent URL appears here after Cloudflare setup.</code>
+          <button type="button" class="btn light" id="mcpCopy" disabled>Copy URL</button>
+        </div>
+        <div class="mcp-foot">
+          <a href="https://chatgpt.com/plugins?directoryTab=personal" target="_blank" rel="noopener noreferrer">Open ChatGPT connectors</a>
+          <span id="mcpNote"></span>
+        </div>
+        <div class="perm" id="perm" hidden>
+          <div class="perm-row">
+            <button type="button" class="btn sm light" id="permBtn">Get a permanent address</button>
+            <span class="perm-msg" id="permMsg">One sign-in to a free Cloudflare account, and the URL never changes again.</span>
+          </div>
+          <p class="perm-link" id="permLink" hidden>Didn't open? <a id="permHref" href="#" target="_blank" rel="noopener noreferrer">Open the Cloudflare sign-in page</a></p>
+        </div>
+      </section>
+
+      <section class="setup" id="setup" aria-labelledby="setupH">
+        <h2 id="setupH">How to connect</h2>
+        <ol>
+          <li><span class="n">1</span><b>Get the connector URL</b><span class="chip" data-tone="wait" id="s1">Next</span><p id="s1p">Set up the permanent Cloudflare address once.</p></li>
+          <li><span class="n">2</span><b>Add the connector in ChatGPT</b><span class="chip" id="s2">Waiting</span><p>Plugins, then <b>Add</b> (top right) and pick the custom MCP server option. Paste the URL under <b>Connection</b>, set <b>Authentication: No authentication</b>, tick the risk box, press <b>Create as a plugin</b>.</p></li>
+          <li><span class="n">3</span><b>Try it in a chat</b><span class="chip" id="s3">Waiting</span><p>Type <b>@</b>, pick <b>ChatGPT On Steroids</b>, ask "What's in this folder?" or "Run the cgt_ping tool". Step 3 ticks itself on the first request.</p></li>
+        </ol>
+      </section>
+
+      <section aria-labelledby="boardH">
+        <div class="head">
+          <h2 id="boardH">Activity</h2>
+          <div class="filters" role="group" aria-label="Filter activity">
+            <button type="button" data-f="all" aria-pressed="true">All</button>
+            <button type="button" data-f="read" aria-pressed="false">Reads</button>
+            <button type="button" data-f="write" aria-pressed="false">Writes</button>
+            <button type="button" data-f="exec" aria-pressed="false">Commands</button>
+            <button type="button" data-f="error" aria-pressed="false">Errors</button>
+          </div>
+        </div>
+        <table class="board">
+          <colgroup><col class="c-time"><col class="c-kind"><col class="c-verb"><col><col class="c-st"><col class="c-ms"></colgroup>
+          <thead><tr>
+            <th scope="col">Time</th><th scope="col" class="kind">Kind</th><th scope="col" class="verb">Action</th>
+            <th scope="col">Target</th><th scope="col">Status</th><th scope="col" class="ms">Ms</th>
+          </tr></thead>
+          <tbody id="board"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <aside class="side">
+      <section class="blk" aria-labelledby="cH">
+        <h2 id="cH">Connection</h2>
+        <dl class="kv">
+          <dt>Server</dt><dd id="kSrv">running</dd>
+          <dt>Tunnel</dt><dd id="kTun">checking</dd>
+          <dt>ChatGPT</dt><dd id="kCli">no request yet</dd>
+          <dt>Auth</dt><dd id="kAuth">none</dd>
+          <dt>Client</dt><dd id="kClient" class="mono">—</dd>
+          <dt>Endpoint</dt><dd id="kEnd" class="mono">127.0.0.1:8877/mcp/&lt;secret&gt;</dd>
+        </dl>
+        <div class="acts-side">
+          <a href="https://chatgpt.com/plugins?directoryTab=personal" target="_blank" rel="noopener noreferrer">Open ChatGPT connectors</a>
+          <button type="button" class="linkbtn" id="restart">Restart tunnel</button>
+          <button type="button" class="linkbtn" id="rotate">Rotate address</button>
+        </div>
+        <p class="warn" id="tunErr" hidden></p>
+        <p class="warn">The permanent address only changes when you rotate it. If it leaks, rotate and paste the new URL into ChatGPT.</p>
+      </section>
+
+      <p class="files" id="files"></p>
+    </aside>
+  </div>
+</div>
+
+<div class="gate" id="gate" hidden>
+  <h1>Panel key required</h1>
+  <p>Open this panel with the address the server printed in the console (.../#k=...). The browser opens it for you when the server starts.</p>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<dialog class="guide" id="guide" aria-labelledby="guideH">
+  <div class="guide-head">
+    <h2 id="guideH">How to connect ChatGPT</h2>
+    <button type="button" class="guide-x" id="guideClose" aria-label="Close the guide">x</button>
+  </div>
+  <p class="guide-lead">About two minutes, once. After that this panel only shows what ChatGPT does on this computer.</p>
+
+  <ol class="gsteps">
+    <li id="g1">
+      <h3>Copy your connector URL</h3>
+      <p>This is the address ChatGPT uses to reach this computer. It contains a secret key, so treat it like a password.</p>
+      <div class="g-url"><code id="gUrl">The URL appears here after Cloudflare setup.</code><button type="button" class="btn sm light" id="gCopy" disabled>Copy URL</button></div>
+    </li>
+    <li id="g2">
+      <h3>Add it in ChatGPT</h3>
+      <ol class="gsub">
+        <li><a href="https://chatgpt.com/plugins?directoryTab=personal" target="_blank" rel="noopener noreferrer">Open ChatGPT &gt; Plugins</a> (chatgpt.com/plugins).</li>
+        <li>Press <b>Add</b> (top right) and choose the custom MCP server option.</li>
+        <li><b>Name:</b> ChatGPT On Steroids. Under <b>Connection</b> keep <b>Server URL</b> selected and paste the address you copied.</li>
+        <li>Open the <b>Authentication</b> dropdown and choose <b>No authentication</b> (see the red note below).</li>
+        <li>Tick <b>I understand and want to continue</b>, then press <b>Create as a plugin</b>. ChatGPT validates the connector by calling <code>cgt_ping</code>.</li>
+      </ol>
+      <div class="g-must" role="note">
+        <b>Important: set Authentication to <span class="auth-choice">No authentication</span>.</b>
+        ChatGPT picks <span class="auth-choice">OAuth</span> by default, and with <span class="auth-choice">OAuth</span> the connector fails with
+        <code>[API_CLIENTS_ERROR] Server does not support automatic registration</code>.
+        Choose plain No authentication, not "OAuth or no authentication". With it selected the Advanced OAuth settings disappear, so there is nothing else to fill in. This form has no API Key option, so start the server without <code>CGT_TOKEN</code>; the secret inside the URL is what protects it.
+      </div>
+      <figure style="margin: 16px 0 0; max-width: 64ch;">
+        <img src="data:image/webp;base64,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" alt="ChatGPT add custom MCP server form: Connection set to Server URL, Authentication dropdown open with OAuth, No authentication and OAuth or no authentication (choose No authentication), the risk checkbox and the Create as a plugin button." width="600" height="590" loading="lazy" style="display: block; width: 100%; height: auto; border: 2px solid var(--line-2); border-radius: var(--r);">
+        <figcaption style="margin-top: 8px; color: var(--white); font-size: 13px;">The ChatGPT form: paste the URL under Connection, change Authentication from OAuth to <span style="color: #ff8a00; font-weight: 700;">No authentication</span>, tick the risk box, then press Create as a plugin.</figcaption>
+      </figure>
+    </li>
+    <li id="g3">
+      <h3>Try it in a chat</h3>
+      <p>Start a chat and ask: <i>What's in C:\Users\me\Desktop?</i> or <i>Run the cgt_ping tool.</i> The activity table fills as calls arrive, and the top of the panel turns to <b>ChatGPT connected</b>.</p>
+    </li>
+    <li id="g4">
+      <h3>Day to day</h3>
+      <ul class="gsub">
+        <li>Keep the server open. The Cloudflare relay reconnects on its own after a restart.</li>
+        <li>Writes, deletes and commands run right away, anywhere your user account can reach. Each call lands under <b>Activity</b>.</li>
+      </ul>
+    </li>
+    <li id="g5">
+      <h3>If something is off</h3>
+      <ul class="gsub">
+        <li><b>"Server does not support automatic registration":</b> Authentication is on OAuth. Set it to No authentication.</li>
+        <li><b>ChatGPT cannot validate the connector:</b> the relay is offline. Press Restart tunnel and check the panel.</li>
+        <li><b>Connector offline in ChatGPT:</b> start this server, then try again. The URL stays the same.</li>
+        <li><b>401:</b> the server was started with <code>CGT_TOKEN</code>, but this ChatGPT form cannot send a token. Remove <code>CGT_TOKEN</code> and restart the server.</li>
+        <li><b>Unknown tool:</b> remove and re-add the connector, ChatGPT caches the tool list.</li>
+      </ul>
+    </li>
+  </ol>
+</dialog>
+
+<script src="/app.js"></script>
+</body>
+</html>
