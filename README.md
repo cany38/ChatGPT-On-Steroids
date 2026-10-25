@@ -13,8 +13,6 @@ Calls run with your user's rights, on any folder your account can reach. A local
 
 <p align="center"><img src="screenshots/panel.png" alt="ChatGPT saving a short story to the desktop through the connector" width="760"></p>
 
-ChatGPT reaches the server through a small relay in your own free Cloudflare account, so the connector URL never changes.
-
 ## Getting started
 
 Open the folder for your system and use its three files.
