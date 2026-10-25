@@ -9,9 +9,7 @@ A custom MCP connector that lets ChatGPT work on your own computer. It can read 
 
 Calls run with your user's rights, on any folder your account can reach. A local panel shows each call as it happens.
 
-<p align="center"><img src="Write-Short-Story-10-25-2026_09_47_PM.png" alt="ChatGPT saving a short story to the desktop through the connector" width="760"></p>
-
-<p align="center"><img src="screenshots/chatgpt-chat.png" alt="ChatGPT creating a folder and a text file on the desktop through the connector" width="520"></p>
+<p align="center"><img src="screenshots/chatgpt-chat.png" alt="ChatGPT saving a short story to the desktop through the connector" width="760"></p>
 
 ChatGPT reaches the server through a small relay in your own free Cloudflare account, so the connector URL never changes.
 
