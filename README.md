@@ -30,6 +30,10 @@ Setup installs Node.js, or updates it to the newest patched release from nodejs.
 
 On a Mac, run `chmod +x For-macOS/*.command` once in Terminal first, because the files on GitHub do not carry their run permission. If macOS blocks a file, right click it and choose Open. Mac and Linux support is new and not tested yet.
 
+## Permissions
+
+ChatGPT may ask "Reply yes to proceed" in the chat before a change. That is ChatGPT's own rule, and the connector cannot turn it off. The connector itself asks nothing and has no folder limit. A path without a folder starts from your home folder.
+
 ## Tools
 
 | Tool | What it does |
