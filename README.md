@@ -60,7 +60,8 @@ ChatGPT may ask "Reply yes to proceed" before a change. That is ChatGPT's own ru
 
 ## License
 
-PolyForm Strict 1.0.0. See [LICENSE.md](LICENSE.md). You may download and use the software for personal and other noncommercial purposes. You may not change it, build on it, share copies of it, sell it or use it commercially.
+This project is licensed under the MIT License. See [LICENSE.md](LICENSE.md)
+for details.
 
 ## About
 
